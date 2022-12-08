@@ -1,0 +1,12 @@
+# Copyright (c) 2022 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+if BOARD_MORTAR_BOARD2
+
+config BOARD
+	default "mortar_board2"
+
+config BT_CTLR
+   default BT
+
+endif

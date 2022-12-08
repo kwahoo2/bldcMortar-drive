@@ -1,0 +1,182 @@
+// Copyright (c) 2022 Nordic Semiconductor ASA
+// SPDX-License-Identifier: Apache-2.0
+
+/dts-v1/;
+#include <nordic/nrf52840_qiaa.dtsi>
+
+/ {
+	model = "Mortar_Board2";
+	compatible = "nordic,mortar-board2";
+
+	chosen {
+		zephyr,console = &uart0;
+		zephyr,shell-uart = &uart0;
+		zephyr,uart-mcumgr = &uart0;
+		zephyr,bt-mon-uart = &uart0;
+		zephyr,bt-c2h-uart = &uart0;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &slot0_partition;
+	};
+	drvinp {
+		compatible = "gpio-keys";
+		enc0p0: enc0pin0{
+			gpios = <&gpio0 0 (GPIO_ACTIVE_HIGH)>;
+			label = "Encoder 0 Pin 0";
+		};
+		enc0p1: enc0pin1{
+			gpios = <&gpio0 1 (GPIO_ACTIVE_HIGH)>;
+			label = "Encoder 0 Pin 1";
+		};
+		enc1p0: enc1pin0{
+			gpios = <&gpio1 9 (GPIO_ACTIVE_HIGH)>;
+			label = "Encoder 1 Pin 0";
+		};
+		enc1p1: enc1pin1{
+			gpios = <&gpio0 12 (GPIO_ACTIVE_HIGH)>;
+			label = "Encoder 1 Pin 1";
+		};
+		fg0p: fg0pin{
+			gpios = <&gpio0 8 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; //DRV FG pin is open drain
+			label = "FG 0 Pin";
+		};
+		fg1p: fg1pin{
+			gpios = <&gpio0 6 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+			label = "FG 1 Pin";
+		};
+	};
+
+	drvout{
+		compatible = "gpio-leds";
+		dir0: dir_0{
+			gpios = <&gpio0 31 GPIO_ACTIVE_HIGH>;
+			label = "Driver 0 direction pin";
+		};
+		dir1: dir_1{
+			gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
+			label = "Driver 1 direction pin";
+		};
+		
+	};
+	leds {
+		compatible = "gpio-leds";
+		led0: led_0 {
+			gpios = <&gpio1 2 GPIO_ACTIVE_LOW>;
+			label = "LED 0";
+		};
+	};
+	aliases {
+		dir0 = &dir0;
+		dir1 = &dir1;
+		enc0p0 = &enc0p0;
+		enc0p1 = &enc0p1;
+		enc1p0 = &enc1p0;
+		enc1p1 = &enc1p1;
+		fg0p = &fg0p;
+		fg1p = &fg1p;
+		led0 = &led0;
+	};
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		boot_partition: partition@0 {
+			label = "mcuboot";
+			reg = <0x0 0xc000>;
+		};
+		slot0_partition: partition@c000 {
+			label = "image-0";
+			reg = <0xc000 0x72000>;
+		};
+		slot1_partition: partition@7e000 {
+			label = "image-1";
+			reg = <0x7e000 0x72000>;
+		};
+		scratch_partition: partition@f0000 {
+			label = "image-scratch";
+			reg = <0xf0000 0xa000>;
+		};
+		storage_partition: partition@fa000 {
+			label = "storage";
+			reg = <0xfa000 0x6000>;
+		};
+	};
+};
+
+&adc {
+	status = "okay";
+};
+
+&gpiote {
+	status = "okay";
+};
+
+&gpio0 {
+	status = "okay";
+};
+
+&gpio1 {
+	status = "okay";
+};
+
+&uart0 {
+	compatible = "nordic,nrf-uarte";
+	status = "okay";
+	current-speed = <115200>;
+	tx-pin = <36>;
+};
+
+&uart1 {
+	status = "okay";
+	current-speed = <9600>;
+	tx-pin = <24>;
+	rx-pull-up;
+	rx-pin = <32>;
+};
+
+&i2c0 {
+	compatible = "nordic,nrf-twi";
+	status = "okay";
+	sda-pin = <20>;
+	scl-pin = <22>;
+};
+
+&i2c1 {
+	compatible = "nordic,nrf-twi";
+	status = "okay";
+	sda-pin = <13>;
+	scl-pin = <15>;
+};
+&spi0 {
+	compatible = "nordic,nrf-spi";
+	/* Cannot be used together with i2c0. */
+	status = "disabled";
+	sck-pin = <27>;
+	mosi-pin = <26>;
+	miso-pin = <29>;
+};
+
+&spi1 {
+	compatible = "nordic,nrf-spi";
+	status = "disabled";
+	sck-pin = <31>;
+	mosi-pin = <30>;
+	miso-pin = <40>;
+};
+
+&spi2 {
+	compatible = "nordic,nrf-spi";
+	status = "disabled";
+	sck-pin = <19>;
+	mosi-pin = <20>;
+	miso-pin = <21>;
+};
+
+zephyr_udc0: &usbd {
+	compatible = "nordic,nrf-usbd";
+	status = "okay";
+};

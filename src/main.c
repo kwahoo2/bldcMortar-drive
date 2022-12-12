@@ -45,6 +45,12 @@ void main(void)
 	extern int driver_verbosity;
 
 	int cnt = 0;
+
+	/*load regs from flash*/
+	for (int id = 0; id < 2; ++id)
+	{
+		read_drive_settings(id, 1);
+	}
 	while (1) 
 	{
 		k_msleep(MAIN_SLEEP_TIME_MS);

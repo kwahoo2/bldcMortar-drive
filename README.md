@@ -19,7 +19,7 @@ or
 
 * a nRF52840-based board plus TI DRV10983 driver boards, for example [nRF52840 Dongle](https://www.nordicsemi.com/Products/Development-hardware/nrf52840-dongle) and MIKROE BRUSHLESS 3 CLICK board should work
 
-* additionally a SWD programmer, the nRF52840 DK board can be used for this purpose. Not needed if a board with bootloader (eg. nRF52840 Dongle) is used.
+* additionally a SWD programmer, a nRF52840 DK board can be used for this purpose. Not needed if a board with bootloader (eg. nRF52840 Dongle) is used.
 
 ## Installation
 
@@ -50,12 +50,12 @@ Use the _mortar_board2.dts_ devicetree file for creating a build configuration.
 **bldcMortar-drive** exposes:
 
 * 6d84a3d2-9a17-49bc-92f7-3bcc72de2137 Primary Service
-* 6d84a3d2-9a17-49bc-92f7-3bcc72de2138 Characteristic, for sending command and reading data in 8-byte messages
+* 6d84a3d2-9a17-49bc-92f7-3bcc72de2138 Characteristic, for sending commands and reading data in 8-byte messages
 * 6d84a3d2-9a17-49bc-92f7-3bcc72de2139 Characteristic, for encoder 0 value, int64_t
 * 6d84a3d2-9a17-49bc-92f7-3bcc72de2140 Characteristic, for encoder 1 value, int64_t
 
 
-The firmware send data to the host using notifications.
+The firmware sends data to the host using notifications.
 
 The 8-byte command (host-to-drive):
 
@@ -94,6 +94,22 @@ Discovery started
 [Mortar drive:/service0010/char0011]# write "0x53 0x50 0x46 0x01 0xFF 0x01 0x00 0x00"
 ```
 
+### Storing settings in the nRF flash
+
+By default bldcMortar-drive load registry values from the nRF52840 flash, if available. An user can save current DRV10983 registers to the flash using _bldcMortar_tools_ or writing the "WFL" command, for drive 0 and 1 respectively:
+
+```
+[Mortar drive:/service0010/char0011]# write "0x57 0x46 0x4c 0x00 0x00 0x00 0x00 0x00"
+[Mortar drive:/service0010/char0011]# write "0x57 0x46 0x4c 0x01 0x00 0x00 0x00 0x00"
+```
+
+Additionally, in the _bldc_driver.c_ there are two constants defined:
+
+```
+#define DEF_MPR 0x5D //motor phase resistance
+#define DEF_BEMF 0x2E //BEMF constant
+```
+bldcMortar-drive loads them before reading flash, so they are overwritten if the flash is not empty. You may like to adjust them to your motor parameters.
 
 ## License
 

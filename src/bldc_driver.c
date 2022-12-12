@@ -55,19 +55,15 @@
 #define DIR1_GPIO_FLAGS  0
 #endif
 
-#define DRV10983_ADDRESS 0x52 //Real DRV adress
+#define DRV10983_ADDRESS 0x52 //DRV 10983 adress
 #define SPEEDCTRL1 0x00
 #define SPEEDCTRL2 0x01
 #define MOTORSPEED1 0x11
 #define MOTORSPEED2 0x12
 #define MOTORPARAM1 0x20
 #define MOTORPARAM2 0x21
-#define DEF_MPR 0x5D
-#define DEF_BEMF 0x2E
-
-/*#define DRV10983_ADDRESS 0x53 //for testing purposes
-#define SPEEDCTRL1 0x1E
-#define SPEEDCTRL2 0x1F*/
+#define DEF_MPR 0x5D //motor phase resistance
+#define DEF_BEMF 0x2E //BEMF constant
 
 const struct device *dev_i2c0;
 const struct device *dev_i2c1;

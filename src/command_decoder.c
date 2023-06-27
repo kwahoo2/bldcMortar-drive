@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: Apache-2.0                              *
  * Copyright (c) 2022 Adrian Przekwas <adrian.v.przekwas@gmail.com> */
 
-#include <sys/printk.h>
+#include <zephyr/sys/printk.h>
 #include <stdio.h>
 #include <string.h>
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 #include "command_decoder.h"
 #include "bldc_driver.h"

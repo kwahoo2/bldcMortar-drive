@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: Apache-2.0                              *
  * Copyright (c) 2022 Adrian Przekwas <adrian.v.przekwas@gmail.com> */
 
-#include <zephyr.h>
-#include <device.h>
-#include <devicetree.h>
-#include <drivers/gpio.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/gpio.h>
 
-#include <sys/printk.h>
+#include <zephyr/sys/printk.h>
 
 #include "encoder_reader.h"
 
@@ -147,54 +147,67 @@ static struct gpio_callback fg1_cb_data;
 
 void initialise_encoder(void)
 {
-	const struct device *dev1;
-	const struct device *dev2;
 	int ret;
 
-	dev1 = device_get_binding(E0P1_GPIO_LABEL);
-	if (dev1 == NULL) {
-		return;
-	}
-	dev2 = device_get_binding(E1P0_GPIO_LABEL); //E1P0 on different bus, set an unique dev for every pin?
-	if (dev2 == NULL) {
-		return;
+	struct gpio_dt_spec e0p0 = GPIO_DT_SPEC_GET(E0P0_NODE, gpios);
+
+	if(!device_is_ready(e0p0.port)) {
+		printk("E0P0 device not ready!\n");
 	}
 
-    ret = gpio_pin_configure(dev1, E0P0_GPIO_PIN, GPIO_INPUT | E0P0_GPIO_FLAGS);
+	struct gpio_dt_spec e0p1 = GPIO_DT_SPEC_GET(E0P1_NODE, gpios);
+
+	if(!device_is_ready(e0p1.port)) {
+		printk("E0P1 device not ready!\n");
+	}
+
+	struct gpio_dt_spec e1p0 = GPIO_DT_SPEC_GET(E1P0_NODE, gpios);
+
+	if(!device_is_ready(e1p0.port)) {
+		printk("E1P0 device not ready!\n");
+	}
+
+	struct gpio_dt_spec e1p1 = GPIO_DT_SPEC_GET(E1P1_NODE, gpios);
+
+	if(!device_is_ready(e1p1.port)) {
+		printk("E1P1 device not ready!\n");
+	}
+
+    ret = gpio_pin_configure(e0p0.port, E0P0_GPIO_PIN, GPIO_INPUT | E0P0_GPIO_FLAGS);
     if (ret < 0) {
         return;
     }
 
-    ret = gpio_pin_configure(dev1, E0P1_GPIO_PIN, GPIO_INPUT | E0P1_GPIO_FLAGS);
+    ret = gpio_pin_configure(e0p1.port, E0P1_GPIO_PIN, GPIO_INPUT | E0P1_GPIO_FLAGS);
     if (ret < 0) {
         return;
     }
 
-	ret = gpio_pin_configure(dev2, E1P0_GPIO_PIN, GPIO_INPUT | E1P0_GPIO_FLAGS);
+	ret = gpio_pin_configure(e1p0.port, E1P0_GPIO_PIN, GPIO_INPUT | E1P0_GPIO_FLAGS);
     if (ret < 0) {
         return;
     }
 
-    ret = gpio_pin_configure(dev1, E1P1_GPIO_PIN, GPIO_INPUT | E1P1_GPIO_FLAGS);
+    ret = gpio_pin_configure(e1p1.port, E1P1_GPIO_PIN, GPIO_INPUT | E1P1_GPIO_FLAGS);
     if (ret < 0) {
         return;
     }
 
 	/*  Configure the interrupt on the pin by calling the function gpio_pin_interrupt_configure()  */
-	ret = gpio_pin_interrupt_configure(dev1, E0P0_GPIO_PIN, GPIO_INT_EDGE_TO_ACTIVE); 
+	ret = gpio_pin_interrupt_configure(e0p0.port, E0P0_GPIO_PIN, GPIO_INT_EDGE_TO_ACTIVE); 
 	if (ret < 0) {
         return;
     }
-	ret = gpio_pin_interrupt_configure(dev1, E0P1_GPIO_PIN, GPIO_INT_EDGE_BOTH);
+	ret = gpio_pin_interrupt_configure(e0p1.port, E0P1_GPIO_PIN, GPIO_INT_EDGE_BOTH);
 	if (ret < 0) {
         return;
     }
 
-	ret = gpio_pin_interrupt_configure(dev2, E1P0_GPIO_PIN, GPIO_INT_EDGE_TO_ACTIVE); 
+	ret = gpio_pin_interrupt_configure(e1p0.port, E1P0_GPIO_PIN, GPIO_INT_EDGE_TO_ACTIVE); 
 	if (ret < 0) {
         return;
     }
-	ret = gpio_pin_interrupt_configure(dev1, E1P1_GPIO_PIN, GPIO_INT_EDGE_BOTH);
+	ret = gpio_pin_interrupt_configure(e1p1.port, E1P1_GPIO_PIN, GPIO_INT_EDGE_BOTH);
 	if (ret < 0) {
         return;
     }
@@ -206,36 +219,48 @@ void initialise_encoder(void)
 	gpio_init_callback(&enc1_cb_data_a, enc1_moved_a, BIT(E1P0_GPIO_PIN));
 	gpio_init_callback(&enc1_cb_data_b, enc1_moved_b, BIT(E1P1_GPIO_PIN)); 
 	/* Add the callback function by calling gpio_add_callback()   */
-	gpio_add_callback(dev1, &enc0_cb_data_a);
-	gpio_add_callback(dev1, &enc0_cb_data_b);
+	gpio_add_callback(e0p0.port, &enc0_cb_data_a);
+	gpio_add_callback(e0p1.port, &enc0_cb_data_b);
 
-	gpio_add_callback(dev2, &enc1_cb_data_a);
-	gpio_add_callback(dev1, &enc1_cb_data_b);
+	gpio_add_callback(e1p0.port, &enc1_cb_data_a);
+	gpio_add_callback(e1p1.port, &enc1_cb_data_b);
 
 
 	/*FG pin callback configuration*/
-    ret = gpio_pin_configure(dev1, FG0_GPIO_PIN, GPIO_INPUT | FG0_GPIO_FLAGS);
+	struct gpio_dt_spec fg0 = GPIO_DT_SPEC_GET(FG0_NODE, gpios);
+
+	if(!device_is_ready(fg0.port)) {
+		printk("FG0 device not ready!\n");
+	}
+
+    ret = gpio_pin_configure(fg0.port, FG0_GPIO_PIN, GPIO_INPUT | FG0_GPIO_FLAGS);
     if (ret < 0) {
         return;
     }
-	ret = gpio_pin_interrupt_configure(dev1, FG0_GPIO_PIN, GPIO_INT_EDGE_RISING);
+	ret = gpio_pin_interrupt_configure(fg0.port, FG0_GPIO_PIN, GPIO_INT_EDGE_RISING);
 	if (ret < 0) {
         return;
     }
 	gpio_init_callback(&fg0_cb_data, fg0_moved, BIT(FG0_GPIO_PIN)); 
-	gpio_add_callback(dev1, &fg0_cb_data);
+	gpio_add_callback(fg0.port, &fg0_cb_data);
 
 	/*second motor*/
-	ret = gpio_pin_configure(dev1, FG1_GPIO_PIN, GPIO_INPUT | FG1_GPIO_FLAGS);
+	struct gpio_dt_spec fg1 = GPIO_DT_SPEC_GET(FG1_NODE, gpios);
+
+	if(!device_is_ready(fg1.port)) {
+		printk("FG1 device not ready!\n");
+	}
+
+	ret = gpio_pin_configure(fg1.port, FG1_GPIO_PIN, GPIO_INPUT | FG1_GPIO_FLAGS);
     if (ret < 0) {
         return;
     }
-	ret = gpio_pin_interrupt_configure(dev1, FG1_GPIO_PIN, GPIO_INT_EDGE_RISING);
+	ret = gpio_pin_interrupt_configure(fg1.port, FG1_GPIO_PIN, GPIO_INT_EDGE_RISING);
 	if (ret < 0) {
         return;
     }
 	gpio_init_callback(&fg1_cb_data, fg1_moved, BIT(FG1_GPIO_PIN)); 
-	gpio_add_callback(dev1, &fg1_cb_data);
+	gpio_add_callback(fg1.port, &fg1_cb_data);
 }
 
 void get_enc0_val(int64_t *steps) 

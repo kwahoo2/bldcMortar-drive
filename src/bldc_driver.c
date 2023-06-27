@@ -1,14 +1,14 @@
 /* SPDX-License-Identifier: Apache-2.0                              *
  * Copyright (c) 2022 Adrian Przekwas <adrian.v.przekwas@gmail.com> */
 
-#include <zephyr.h>
-#include <device.h>
-#include <devicetree.h>
-#include <drivers/gpio.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/gpio.h>
 
-#include <drivers/i2c.h>
+#include <zephyr/drivers/i2c.h>
 
-#include <sys/printk.h>
+#include <zephyr/sys/printk.h>
 
 #include "bldc_driver.h"
 #include "ble_comm.h"
@@ -92,15 +92,15 @@ int initialise_i2c(void)
 {
 
 	/* Get the binding of the I2C driver  */
-	dev_i2c0 = device_get_binding(I2C0);
+	dev_i2c0 = DEVICE_DT_GET(I2C0_NODE);
 	if (dev_i2c0 == NULL) {
-	printk("Could not find  %s!\n\r",I2C0);
+	printk("Could not find  I2C0!\n\r");
 	return -1;
 	}
 
-    dev_i2c1 = device_get_binding(I2C1);
+    dev_i2c1 = DEVICE_DT_GET(I2C1_NODE);
 	if (dev_i2c1 == NULL) {
-	printk("Could not find  %s!\n\r",I2C1);
+	printk("Could not find  I2C1!\n\r");
 	return -1;
 	}
 	uint8_t speed_ctrl2 = 0x80; //bit [7]

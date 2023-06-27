@@ -8,7 +8,7 @@ The **bldcMortar** package delivers a standalone BLDC motor driver with Bluetoot
 
 ### Software Dependencies
 
-* nRF Connect SDK
+* nRF Connect SDK 2.x (tested with NCS 2.4.0)
 * (optional) Visual Studio Code
 
 ### Hardware

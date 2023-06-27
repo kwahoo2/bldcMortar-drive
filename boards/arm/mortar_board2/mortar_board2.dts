@@ -3,10 +3,11 @@
 
 /dts-v1/;
 #include <nordic/nrf52840_qiaa.dtsi>
+#include "mortar_board2-pinctrl.dtsi"
 
 / {
 	model = "Mortar_Board2";
-	compatible = "nordic,mortar-board2";
+	compatible = "nordic,mortar_board2";
 
 	chosen {
 		zephyr,console = &uart0;
@@ -56,7 +57,7 @@
 			gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
 			label = "Driver 1 direction pin";
 		};
-		
+
 	};
 	leds {
 		compatible = "gpio-leds";
@@ -127,53 +128,58 @@
 	compatible = "nordic,nrf-uarte";
 	status = "okay";
 	current-speed = <115200>;
-	tx-pin = <36>;
+	pinctrl-0 = <&uart0_default>;
+	pinctrl-1 = <&uart0_sleep>;
+	pinctrl-names = "default", "sleep";
+
 };
 
 &uart1 {
 	status = "okay";
 	current-speed = <9600>;
-	tx-pin = <24>;
-	rx-pull-up;
-	rx-pin = <32>;
+	pinctrl-0 = <&uart1_default>;
+	pinctrl-1 = <&uart1_sleep>;
+	pinctrl-names = "default", "sleep";
 };
 
 &i2c0 {
 	compatible = "nordic,nrf-twi";
 	status = "okay";
-	sda-pin = <20>;
-	scl-pin = <22>;
+	pinctrl-0 = <&i2c0_default>;
+	pinctrl-1 = <&i2c0_sleep>;
+	pinctrl-names = "default", "sleep";
 };
 
 &i2c1 {
 	compatible = "nordic,nrf-twi";
 	status = "okay";
-	sda-pin = <13>;
-	scl-pin = <15>;
+	pinctrl-0 = <&i2c1_default>;
+	pinctrl-1 = <&i2c1_sleep>;
+	pinctrl-names = "default", "sleep";
 };
 &spi0 {
 	compatible = "nordic,nrf-spi";
 	/* Cannot be used together with i2c0. */
 	status = "disabled";
-	sck-pin = <27>;
-	mosi-pin = <26>;
-	miso-pin = <29>;
+	pinctrl-0 = <&spi0_default>;
+	pinctrl-1 = <&spi0_sleep>;
+	pinctrl-names = "default", "sleep";
 };
 
 &spi1 {
 	compatible = "nordic,nrf-spi";
 	status = "disabled";
-	sck-pin = <31>;
-	mosi-pin = <30>;
-	miso-pin = <40>;
+	pinctrl-0 = <&spi1_default>;
+	pinctrl-1 = <&spi1_sleep>;
+	pinctrl-names = "default", "sleep";
 };
 
 &spi2 {
 	compatible = "nordic,nrf-spi";
 	status = "disabled";
-	sck-pin = <19>;
-	mosi-pin = <20>;
-	miso-pin = <21>;
+	pinctrl-0 = <&spi2_default>;
+	pinctrl-1 = <&spi2_sleep>;
+	pinctrl-names = "default", "sleep";
 };
 
 zephyr_udc0: &usbd {

@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: Apache-2.0                              *
  * Copyright (c) 2022 Adrian Przekwas <adrian.v.przekwas@gmail.com> */
 
-#include <zephyr.h>
-#include <sys/printk.h>
-#include <device.h>
-#include <drivers/uart.h>
+#include <zephyr/kernel.h>
+#include <zephyr/sys/printk.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/uart.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
